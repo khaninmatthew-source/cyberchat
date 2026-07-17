@@ -65,7 +65,9 @@ API_KEY = st.secrets["API_KEY"]
 client = genai.Client(api_key=API_KEY)
 if "messages" not in st.session_state: st.session_state.messages = []
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]): st.image(message["content"]) if message["type"] == "image" else st.markdown(message["content"])
+    with st.chat_message(message["role"]):
+        if "type" in message and message["type"] == "image": st.image(message["content"])
+        else: st.markdown(message["content"])
 if prompt := st.chat_input("Запуск квантового потока данных..."):
     with st.chat_message("user"): st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt, "type": "text"})
