@@ -38,7 +38,8 @@ st.markdown("""
 st.caption("Профессиональный ИИ-ассистент нового поколения")
 
 # Твой проверенный рабочий API-ключ (без точек в начале!)
-API_KEY = "AQ.Ab8RN6J1t2xp8oMp2MFusliPJEc_SSVkuhuOdpS4pD1F73A0CQ"
+API_KEY = st.secrets["API_KEY"]
+
 
 # Создаем современный клиент по новым правилам Google
 client = genai.Client(api_key=API_KEY)
