@@ -1,104 +1,60 @@
-import streamlit as st
-import google.genai as genai
-import io
-from PIL import Image
-
-st.set_page_config(page_title="Gemini Quantum Core", page_icon="⚡", layout="centered")
-
-st.markdown("""
-    <style>
-    @import url('https://googleapis.com');
-    .stApp { background-color: #020104 !important; color: #00ffcc !important; font-family: 'Inter', sans-serif !important; overflow-x: hidden; }
-    header, footer {visibility: hidden !important;}
-    .cyber-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-    .bg-grid { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 255, 204, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 204, 0.015) 1px, transparent 1px); background-size: 40px 40px; background-position: center center; }
-    .pulse-path { stroke-dasharray: 30, 150; stroke-dashoffset: 180; animation: laserRun 3s infinite linear; }
-    .pulse-path-fast { stroke-dasharray: 15, 100; stroke-dashoffset: 115; animation: laserRun 1.8s infinite linear; }
-    @keyframes laserRun { to { stroke-dashoffset: 0; } }
-    h1 { font-family: 'Orbitron', sans-serif !important; background: linear-gradient(135deg, #00ffcc 0%, #ff007f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900 !important; font-size: 2.4rem !important; letter-spacing: 2px !important; text-shadow: 0 0 20px rgba(0, 255, 204, 0.2); z-index: 2; position: relative; }
-    .cyber-alert { background: rgba(255, 0, 127, 0.04); border: 1px solid rgba(255, 0, 127, 0.25); border-radius: 14px; padding: 15px 20px; margin: 20px 0; box-shadow: 0 0 15px rgba(255, 0, 127, 0.05); z-index: 2; position: relative; }
-    .stChatMessage { background: rgba(6, 4, 15, 0.85) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 204, 0.12) !important; border-radius: 18px !important; margin-bottom: 16px !important; padding: 16px !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); z-index: 2; position: relative; }
-    .stChatInputContainer { border-radius: 24px !important; border: 2px solid #ff007f !important; background-color: #05030d !important; box-shadow: 0 0 25px rgba(255, 0, 127, 0.15) !important; z-index: 2; position: relative; }
-    .stChatInputContainer:focus-within { border-color: #00ffcc !important; box-shadow: 0 0 25px rgba(0, 255, 0, 0.25) !important; }
-    .stSpinner > div { border-top-color: #00ffcc !important; }
-    </style>
-    <div class="cyber-background">
-        <div class="bg-grid"></div>
-        <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://w3.org">
-            <defs>
-                <filter id="glow-cyan" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
-                <filter id="glow-pink" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
-            </defs>
-            <!-- СЛОЖНАЯ СЕТЬ МИКРОДОРОЖЕК С УГЛАМИ 45 ГРАДУСОВ -->
-            <g stroke-width="1.2" fill="none">
-                <!-- Квантовый Пучок Вверх -->
-                <path d="M500,400 L500,50 M470,400 L470,220 L380,130 L380,50 M440,400 L440,250 L320,130 L320,50 M530,400 L530,220 L620,130 L620,50 M560,400 L560,250 L680,130 L680,50" stroke="rgba(0, 255, 204, 0.1)" />
-                <path d="M500,400 L500,50 M470,400 L470,220 L380,130 L380,50 M530,400 L530,220 L620,130 L620,50" stroke="#00ffcc" class="pulse-path" filter="url(#glow-cyan)" />
-                <!-- Системные подписи на плате -->
-                <text x="505" y="80" fill="rgba(0, 255, 204, 0.3)" font-family="Orbitron" font-size="8">SYS_BUS_A</text>
-                <text x="325" y="80" fill="rgba(0, 255, 204, 0.3)" font-family="Orbitron" font-size="8">VCC_CORE</text>
-
-                <!-- Квантовый Пучок Вниз -->
-                <path d="M500,600 L500,950 M460,600 L460,780 L340,900 L340,950 M420,600 L420,810 L260,950 M540,600 L540,780 L660,900 L660,950 M580,600 L580,810 L740,950" stroke="rgba(255, 0, 127, 0.1)" />
-                <path d="M500,600 L500,950 M460,600 L460,780 L340,900 L340,950 M540,600 L540,780 L660,900 L660,950" stroke="#ff007f" class="pulse-path-fast" filter="url(#glow-pink)" />
-
-                <!-- Квантовый Пучок Влево -->
-                <path d="M400,500 L50,500 M400,460 L220,460 L130,370 L50,370 M400,420 L250,420 L100,270 L50,270 M400,540 L220,540 L130,630 L50,630 M400,580 L250,580 L100,730 L50,730" stroke="rgba(0, 255, 204, 0.1)" />
-                <path d="M400,500 L50,500 M400,460 L220,460 L130,370 L50,370 M400,540 L220,540 L130,630 L50,630" stroke="#00ffcc" class="pulse-path-fast" filter="url(#glow-cyan)" />
-
-                <!-- Квантовый Пучок Вправо -->
-                <path d="M600,500 L950,500 M600,460 L780,460 L870,370 L950,370 M600,420 L750,420 L850,270 L950,270 M600,540 L780,540 L870,630 L950,630 M600,580 L750,580 L850,730 L950,730" stroke="rgba(255, 0, 127, 0.1)" />
-                <path d="M600,500 L950,500 M600,460 L780,460 L870,370 L950,370 M600,540 L780,540 L870,630 L950,630" stroke="#ff007f" class="pulse-path" filter="url(#glow-pink)" />
-            </g>
-
-            <!-- СВЕРХДЕТАЛИЗИРОВАННЫЙ СВЕТЯЩИЙСЯ ЧИП (ЦЕНТР) -->
-            <g transform="translate(400, 400)" opacity="0.16">
-                <!-- 1. Внешнее монтажное кольцо -->
-                <rect x="0" y="0" width="200" height="200" rx="16" fill="none" stroke="#ff007f" stroke-width="2" opacity="0.5"/>
-                <!-- 2. Главная подложка процессора -->
-                <rect x="10" y="10" width="180" height="180" rx="12" fill="#070414" stroke="#ff007f" stroke-width="4" filter="url(#glow-pink)"/>
-                <!-- 3. Золотые ножки контактов (Многослойные) -->
-                <g fill="#00ffcc" opacity="0.8">
-                    <rect x="18" y="35" width="6" height="3"/><rect x="18" y="55" width="6" height="3"/><rect x="18" y="75" width="6" height="3"/><rect x="18" y="95" width="6" height="3"/><rect x="18" y="115" width="6" height="3"/><rect x="18" y="135" width="6" height="3"/><rect x="18" y="155" width="6" height="3"/>
-                    <rect x="176" y="35" width="6" height="3"/><rect x="176" y="55" width="6" height="3"/><rect x="176" y="75" width="6" height="3"/><rect x="176" y="95" width="6" height="3"/><rect x="176" y="115" width="6" height="3"/><rect x="176" y="135" width="6" height="3"/><rect x="176" y="155" width="6" height="3"/>
-                    <rect x="35" y="18" width="3" height="6"/><rect x="55" y="18" width="3" height="6"/><rect x="75" y="18" width="3" height="6"/><rect x="95" y="18" width="3" height="6"/><rect x="115" y="18" width="3" height="6"/><rect x="135" y="18" width="3" height="6"/><rect x="155" y="18" width="3" height="6"/>
-                    <rect x="35" y="176" width="3" height="6"/><rect x="55" y="176" width="3" height="6"/><rect x="75" y="176" width="3" height="6"/><rect x="95" y="176" width="3" height="6"/><rect x="115" y="176" width="3" height="6"/><rect x="135" y="176" width="3" height="6"/><rect x="155" y="176" width="3" height="6"/>
-                </g>
-                <!-- 4. Металлическая защитная крышка кристалла -->
-                <rect x="35" y="35" width="130" height="130" rx="8" fill="#0f0b26" stroke="#00ffcc" stroke-width="2" filter="url(#glow-cyan)"/>
-                <!-- Inner Сircuit (Внутренние дорожки кристалла) -->
-                <rect x="55" y="55" width="90" height="90" rx="4" fill="#030208" stroke="#ff007f" stroke-width="1" stroke-dasharray="4,4"/>
-                <!-- 5. Вычислительное Квантовое Ядро -->
-                <rect x="70" y="70" width="60" height="60" rx="2" fill="#010003" stroke="#00ffcc" stroke-width="2"/>
-                <!-- Лазерный прицел внутри ядра -->
-                <line x1="75" y1="100" x2="125" y2="100" stroke="#ff007f" stroke-width="1.5" filter="url(#glow-pink)"/>
-                <line x1="100" y1="75" x2="100" y2="125" stroke="#ff007f" stroke-width="1.5" filter="url(#glow-pink)"/>
-                <circle cx="100" cy="100" r="14" fill="none" stroke="#00ffcc" stroke-width="2" filter="url(#glow-cyan)"/>
-                <circle cx="100" cy="100" r="4" fill="#00ffcc"/>
-            </g>
-        </svg>
-    </div>
-""", unsafe_allow_html=True)
+import streamlit as st, google.genai as genai, io; from PIL import Image
+st.set_page_config(page_title="Gemini Cybercore", page_icon="⚡", layout="centered")
+st.markdown("""<style>
+@import url('https://googleapis.com');
+.stApp { background: #020005 !important; color: #00ffcc !important; font-family: 'Inter', sans-serif !important; overflow-x: hidden; }
+header, footer {visibility: hidden !important;}
+.cyber-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+.bg-grid { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(0,255,204,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,204,0.015) 1px, transparent 1px); background-size: 30px 30px; background-position: center; }
+.pulse-c { stroke-dasharray: 40, 120; stroke-dashoffset: 160; animation: run 2s infinite linear; filter: drop-shadow(0 0 8px #00ffcc); }
+.pulse-p { stroke-dasharray: 30, 100; stroke-dashoffset: 130; animation: run 1.5s infinite linear; filter: drop-shadow(0 0 8px #ff007f); }
+@keyframes run { to { stroke-dashoffset: 0; } }
+h1 { font-family: 'Orbitron', sans-serif !important; background: linear-gradient(135deg, #00ffcc, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900 !important; font-size: 2.6rem !important; text-shadow: 0 0 25px rgba(0,255,204,0.4); margin-bottom: 0px; }
+.cyber-alert { background: rgba(255,0,127,0.06); border: 2px solid #ff007f; border-radius: 14px; padding: 15px; margin: 20px 0; box-shadow: 0 0 25px rgba(255,0,127,0.3), inset 0 0 15px rgba(255,0,127,0.2); }
+.stChatMessage { background: rgba(5,3,12,0.9) !important; backdrop-filter: blur(15px); border: 1px solid rgba(0,255,204,0.2) !important; border-radius: 18px !important; margin-bottom: 16px !important; box-shadow: 0 0 15px rgba(0,0,0,0.6); }
+.stChatMessage:hover { border-color: #00ffcc !important; box-shadow: 0 0 25px rgba(0,255,204,0.3) !important; transform: scale(1.01); transition: all 0.2s ease; }
+.stChatInputContainer { border-radius: 24px !important; border: 2px solid #ff007f !important; background: #05030d !important; box-shadow: 0 0 30px rgba(255,0,127,0.3) !important; }
+.stChatInputContainer:focus-within { border-color: #00ffcc !important; box-shadow: 0 0 35px rgba(0,255,204,0.5) !important; }
+.stSpinner > div { border-top-color: #00ffcc !important; }
+</style>
+<div class="cyber-bg"><div class="bg-grid"></div>
+<svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://w3.org">
+<g stroke-width="2" fill="none" opacity="0.35">
+<path d="M500,400V0M470,400V200L350,80V0M440,400V230L260,50V0M530,400V200L650,80V0M560,400V230L740,50V0" stroke="rgba(0,255,204,0.2)"/>
+<path d="M500,400V0M470,400V200L350,80V0M530,400V200L650,80V0" stroke="#00ffcc" class="pulse-c"/>
+<path d="M500,600v400M460,600v180L320,900v50M420,600v210L240,950M540,600v180L680,900v50M580,600v210L760,950" stroke="rgba(255,0,127,0.2)"/>
+<path d="M500,600v400M460,600v180L320,900v50M540,600v180L680,900v50" stroke="#ff007f" class="pulse-p"/>
+<path d="M400,500H0M400,460H220L120,360H0M400,420H250L100,270H0M400,540H220L120,640H0M400,580H250L100,730H0" stroke="rgba(0,255,204,0.2)"/>
+<path d="M400,500H0M400,460H220L120,360H0M400,540H220L120,640H0" stroke="#00ffcc" class="pulse-c"/>
+<path d="M600,500H1000M600,460H780L880,360H1000M600,420H750L850,270H1000M600,540H780L880,640H1000M600,580H750L850,730H1000" stroke="rgba(255,0,127,0.2)"/>
+<path d="M600,500H1000M600,460H780L880,360H1000M600,540H780L880,640H1000" stroke="#ff007f" class="pulse-p"/>
+</g>
+<g transform="translate(380,380)" opacity="0.4">
+<rect x="0" y="0" width="240" height="240" rx="20" fill="#04010a" stroke="#ff007f" stroke-width="5" filter="drop-shadow(0 0 20px #ff007f)"/>
+<rect x="20" y="20" width="200" height="200" rx="12" fill="#09051c" stroke="#00ffcc" stroke-width="3" filter="drop-shadow(0 0 15px #00ffcc)"/>
+<g fill="#ff007f">
+<rect x="5" y="40" width="10" height="5"/><rect x="5" y="70" width="10" height="5"/><rect x="5" y="100" width="10" height="5"/><rect x="5" y="130" width="10" height="5"/><rect x="5" y="160" width="10" height="5"/><rect x="5" y="190" width="10" height="5"/>
+<rect x="225" y="40" width="10" height="5"/><rect x="225" y="70" width="10" height="5"/><rect x="225" y="100" width="10" height="5"/><rect x="225" y="130" width="10" height="5"/><rect x="225" y="160" width="10" height="5"/><rect x="225" y="190" width="10" height="5"/>
+<rect x="40" y="5" width="5" height="10"/><rect x="70" y="5" width="5" height="10"/><rect x="100" y="5" width="5" height="10"/><rect x="130" y="5" width="5" height="10"/><rect x="160" y="5" width="5" height="10"/><rect x="190" y="5" width="5" height="10"/>
+<rect x="40" y="225" width="5" height="10"/><rect x="70" y="225" width="5" height="10"/><rect x="100" y="225" width="5" height="10"/><rect x="130" y="225" width="5" height="10"/><rect x="160" y="225" width="5" height="10"/><rect x="190" y="225" width="5" height="10"/>
+</g>
+<rect x="60" y="60" width="120" height="120" rx="8" fill="#020005" stroke="#ff007f" stroke-width="2" stroke-dasharray="6,6"/>
+<rect x="80" y="80" width="80" height="80" rx="4" fill="#000" stroke="#00ffcc" stroke-width="3" filter="drop-shadow(0 0 10px #00ffcc)"/>
+<line x1="85" y1="120" x2="155" y2="120" stroke="#ff007f" stroke-width="2"/><line x1="120" y1="85" x2="120" y2="155" stroke="#ff007f" stroke-width="2"/>
+<circle cx="120" cy="120" r="20" fill="none" stroke="#00ffcc" stroke-width="2.5"/><circle cx="120" cy="120" r="6" fill="#00ffcc"/>
+<text x="25" y="215" fill="rgba(0,255,204,0.4)" font-family="Orbitron" font-size="9" font-weight="bold">HEX_CORE_v3.5</text>
+<text x="145" y="35" fill="rgba(255,0,127,0.4)" font-family="Orbitron" font-size="9" font-weight="bold">VRM_VCC</text>
+</g></svg></div>""", unsafe_allow_html=True)
 st.markdown("<h1>⚡ Quantum Core Premium AI</h1>", unsafe_allow_html=True)
-st.markdown("<div class='cyber-alert'><span style='color: #ff007f; font-weight: bold;'>🚨 СИСТЕМНЫЙ ПРОТОКОЛ:</span> <span style='color: #ffffff;'>Выдерживайте паузу в <b>5-10 секунд</b> перед отправкой пакетов данных. Для рендеринга графики пишите <b>нарисуй...</b></span></div>", unsafe_allow_html=True)
-st.caption("Quantum Grid Engine v3.5 • Все системы стабильны")
-
+st.markdown("<div class='cyber-alert'><span style='color:#ff007f;font-weight:bold;'>🚨 СИСТЕМНЫЙ ПРОТОКОЛ:</span> <span style='color:#fff;'>Пауза <b>5-10 секунд</b> между запросами. Для генерации картинок пишите <b>нарисуй...</b></span></div>", unsafe_allow_html=True)
+st.caption("Quantum Grid Engine v3.5 • Экстремальная неоновая сборка")
 API_KEY = st.secrets["API_KEY"]
 client = genai.Client(api_key=API_KEY)
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
+if "messages" not in st.session_state: st.session_state.messages = []
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        if message["type"] == "image":
-            st.image(message["content"])
-        else:
-            st.markdown(message["content"])
-
+    with st.chat_message(message["role"]): st.image(message["content"]) if message["type"] == "image" else st.markdown(message["content"])
 if prompt := st.chat_input("Запуск квантового потока данных..."):
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    with st.chat_message("user"): st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt, "type": "text"})
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
@@ -107,17 +63,13 @@ if prompt := st.chat_input("Запуск квантового потока да�
                 try:
                     result = client.models.generate_images(model='imagen-3.0-generate-002', prompt=prompt, config=genai.types.GenerateImagesConfig(number_of_images=1, output_mime_type="image/jpeg", aspect_ratio="1:1"))
                     for generated_image in result.generated_images:
-                        image = Image.open(io.BytesIO(generated_image.image.image_bytes))
-                        message_placeholder.image(image)
+                        image = Image.open(io.BytesIO(generated_image.image.image_bytes)); message_placeholder.image(image)
                         st.session_state.messages.append({"role": "assistant", "content": image, "type": "image"})
-                except Exception as e:
-                    message_placeholder.error(f"Сбой графического ядра: {e}")
+                except Exception as e: message_placeholder.error(f"Сбой графического ядра: {e}")
         else:
             with st.spinner("⚡ Вычисление ответа через ядро Gemini Cloud..."):
                 try:
                     response = client.models.generate_content(model='gemini-3.5-flash', contents=prompt, config=genai.types.GenerateContentConfig(max_output_tokens=1500, temperature=0.7))
-                    answer = response.text
-                    message_placeholder.markdown(answer)
+                    answer = response.text; message_placeholder.markdown(answer)
                     st.session_state.messages.append({"role": "assistant", "content": answer, "type": "text"})
-                except Exception as e:
-                    message_placeholder.error(f"Критический сбой шифрования потока: {e}")
+                except Exception as e: message_placeholder.error(f"Критический сбой шифрования потока: {e}")
