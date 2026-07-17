@@ -8,18 +8,17 @@ st.set_page_config(page_title="Gemini Quantum Core", page_icon="⚡", layout="ce
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
-    .stApp { background-color: #040208 !important; color: #00ffcc !important; font-family: 'Inter', sans-serif !important; overflow-x: hidden; }
+    .stApp { background-color: #020104 !important; color: #00ffcc !important; font-family: 'Inter', sans-serif !important; overflow-x: hidden; }
     header, footer {visibility: hidden !important;}
     .cyber-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-    .bg-grid { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 255, 204, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 204, 0.02) 1px, transparent 1px); background-size: 50px 50px; background-position: center center; }
-    .pulse-path { stroke-dasharray: 40, 200; stroke-dashoffset: 240; animation: laserRun 4s infinite linear; }
-    .pulse-path-fast { stroke-dasharray: 20, 150; stroke-dashoffset: 170; animation: laserRun 2.5s infinite linear; }
+    .bg-grid { position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 255, 204, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 204, 0.015) 1px, transparent 1px); background-size: 40px 40px; background-position: center center; }
+    .pulse-path { stroke-dasharray: 30, 150; stroke-dashoffset: 180; animation: laserRun 3s infinite linear; }
+    .pulse-path-fast { stroke-dasharray: 15, 100; stroke-dashoffset: 115; animation: laserRun 1.8s infinite linear; }
     @keyframes laserRun { to { stroke-dashoffset: 0; } }
     h1 { font-family: 'Orbitron', sans-serif !important; background: linear-gradient(135deg, #00ffcc 0%, #ff007f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900 !important; font-size: 2.4rem !important; letter-spacing: 2px !important; text-shadow: 0 0 20px rgba(0, 255, 204, 0.2); z-index: 2; position: relative; }
     .cyber-alert { background: rgba(255, 0, 127, 0.04); border: 1px solid rgba(255, 0, 127, 0.25); border-radius: 14px; padding: 15px 20px; margin: 20px 0; box-shadow: 0 0 15px rgba(255, 0, 127, 0.05); z-index: 2; position: relative; }
-    .stChatMessage { background: rgba(8, 5, 20, 0.82) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 204, 0.12) !important; border-radius: 18px !important; margin-bottom: 16px !important; padding: 16px !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); z-index: 2; position: relative; }
-    .stChatMessage:hover { border-color: rgba(0, 255, 204, 0.3) !important; box-shadow: 0 0 20px rgba(0, 255, 204, 0.08); }
-    .stChatInputContainer { border-radius: 24px !important; border: 2px solid #ff007f !important; background-color: #080514 !important; box-shadow: 0 0 25px rgba(255, 0, 127, 0.15) !important; z-index: 2; position: relative; }
+    .stChatMessage { background: rgba(6, 4, 15, 0.85) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 204, 0.12) !important; border-radius: 18px !important; margin-bottom: 16px !important; padding: 16px !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); z-index: 2; position: relative; }
+    .stChatInputContainer { border-radius: 24px !important; border: 2px solid #ff007f !important; background-color: #05030d !important; box-shadow: 0 0 25px rgba(255, 0, 127, 0.15) !important; z-index: 2; position: relative; }
     .stChatInputContainer:focus-within { border-color: #00ffcc !important; box-shadow: 0 0 25px rgba(0, 255, 0, 0.25) !important; }
     .stSpinner > div { border-top-color: #00ffcc !important; }
     </style>
@@ -27,35 +26,59 @@ st.markdown("""
         <div class="bg-grid"></div>
         <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://w3.org">
             <defs>
-                <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
-                <filter id="glow-pink" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+                <filter id="glow-cyan" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+                <filter id="glow-pink" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
             </defs>
-            <g stroke-width="1.5" fill="none">
-                <path d="M500,410 L500,100 M480,410 L480,200 L400,120 L400,50 M520,410 L520,200 L600,120 L600,50" stroke="rgba(0, 255, 204, 0.15)" />
-                <path d="M500,410 L500,100 M480,410 L480,200 L400,120 L400,50 M520,410 L520,200 L600,120 L600,50" stroke="#00ffcc" class="pulse-path" filter="url(#glow-cyan)" />
-                <path d="M500,590 L500,900 M470,590 L470,750 L350,870 L350,950 M530,590 L530,750 L650,870 L650,950" stroke="rgba(255, 0, 127, 0.15)" />
-                <path d="M500,590 L500,900 M470,590 L470,750 L350,870 L350,950 M530,590 L530,750 L650,870 L650,950" stroke="#ff007f" class="pulse-path-fast" filter="url(#glow-pink)" />
-                <path d="M410,500 L50,500 M410,470 L250,470 L150,370 L0,370 M410,530 L250,530 L150,630 L0,630" stroke="rgba(0, 255, 204, 0.15)" />
-                <path d="M410,500 L50,500 M410,470 L250,470 L150,370 L0,370 M410,530 L250,530 L150,630 L0,630" stroke="#00ffcc" class="pulse-path-fast" filter="url(#glow-cyan)" />
-                <path d="M590,500 L950,500 M590,470 L750,470 L850,370 L1000,370 M590,530 L750,530 L850,630 L1000,630" stroke="rgba(255, 0, 127, 0.15)" />
-                <path d="M590,500 L950,500 M590,470 L750,470 L850,370 L1000,370 M590,530 L750,530 L850,630 L1000,630" stroke="#ff007f" class="pulse-path" filter="url(#glow-pink)" />
+            <!-- СЛОЖНАЯ СЕТЬ МИКРОДОРОЖЕК С УГЛАМИ 45 ГРАДУСОВ -->
+            <g stroke-width="1.2" fill="none">
+                <!-- Квантовый Пучок Вверх -->
+                <path d="M500,400 L500,50 M470,400 L470,220 L380,130 L380,50 M440,400 L440,250 L320,130 L320,50 M530,400 L530,220 L620,130 L620,50 M560,400 L560,250 L680,130 L680,50" stroke="rgba(0, 255, 204, 0.1)" />
+                <path d="M500,400 L500,50 M470,400 L470,220 L380,130 L380,50 M530,400 L530,220 L620,130 L620,50" stroke="#00ffcc" class="pulse-path" filter="url(#glow-cyan)" />
+                <!-- Системные подписи на плате -->
+                <text x="505" y="80" fill="rgba(0, 255, 204, 0.3)" font-family="Orbitron" font-size="8">SYS_BUS_A</text>
+                <text x="325" y="80" fill="rgba(0, 255, 204, 0.3)" font-family="Orbitron" font-size="8">VCC_CORE</text>
+
+                <!-- Квантовый Пучок Вниз -->
+                <path d="M500,600 L500,950 M460,600 L460,780 L340,900 L340,950 M420,600 L420,810 L260,950 M540,600 L540,780 L660,900 L660,950 M580,600 L580,810 L740,950" stroke="rgba(255, 0, 127, 0.1)" />
+                <path d="M500,600 L500,950 M460,600 L460,780 L340,900 L340,950 M540,600 L540,780 L660,900 L660,950" stroke="#ff007f" class="pulse-path-fast" filter="url(#glow-pink)" />
+
+                <!-- Квантовый Пучок Влево -->
+                <path d="M400,500 L50,500 M400,460 L220,460 L130,370 L50,370 M400,420 L250,420 L100,270 L50,270 M400,540 L220,540 L130,630 L50,630 M400,580 L250,580 L100,730 L50,730" stroke="rgba(0, 255, 204, 0.1)" />
+                <path d="M400,500 L50,500 M400,460 L220,460 L130,370 L50,370 M400,540 L220,540 L130,630 L50,630" stroke="#00ffcc" class="pulse-path-fast" filter="url(#glow-cyan)" />
+
+                <!-- Квантовый Пучок Вправо -->
+                <path d="M600,500 L950,500 M600,460 L780,460 L870,370 L950,370 M600,420 L750,420 L850,270 L950,270 M600,540 L780,540 L870,630 L950,630 M600,580 L750,580 L850,730 L950,730" stroke="rgba(255, 0, 127, 0.1)" />
+                <path d="M600,500 L950,500 M600,460 L780,460 L870,370 L950,370 M600,540 L780,540 L870,630 L950,630" stroke="#ff007f" class="pulse-path" filter="url(#glow-pink)" />
             </g>
-            <g transform="translate(410, 410)" opacity="0.18">
-                <rect x="0" y="0" width="180" height="180" rx="14" fill="#09061a" stroke="#ff007f" stroke-width="4" filter="url(#glow-pink)"/>
-                <rect x="20" y="20" width="140" height="140" rx="8" fill="#110d2c" stroke="#00ffcc" stroke-width="2" filter="url(#glow-cyan)"/>
-                <g fill="#ff007f">
-                    <rect x="5" y="30" width="8" height="4"/><rect x="5" y="50" width="8" height="4"/><rect x="5" y="70" width="8" height="4"/><rect x="5" y="90" width="8" height="4"/><rect x="5" y="110" width="8" height="4"/><rect x="5" y="130" width="8" height="4"/><rect x="5" y="145" width="8" height="4"/>
-                    <rect x="167" y="30" width="8" height="4"/><rect x="167" y="50" width="8" height="4"/><rect x="167" y="70" width="8" height="4"/><rect x="167" y="90" width="8" height="4"/><rect x="167" y="110" width="8" height="4"/><rect x="167" y="130" width="8" height="4"/><rect x="167" y="145" width="8" height="4"/>
-                    <rect x="30" y="5" width="4" height="8"/><rect x="50" y="5" width="4" height="8"/><rect x="70" y="5" width="4" height="8"/><rect x="90" y="5" width="4" height="8"/><rect x="110" y="5" width="4" height="8"/><rect x="130" y="5" width="4" height="8"/><rect x="145" y="5" width="4" height="8"/>
-                    <rect x="30" y="167" width="4" height="8"/><rect x="50" y="167" width="4" height="8"/><rect x="70" y="167" width="4" height="8"/><rect x="90" y="167" width="4" height="8"/><rect x="110" y="167" width="4" height="8"/><rect x="130" y="167" width="4" height="8"/><rect x="145" y="167" width="4" height="8"/>
+
+            <!-- СВЕРХДЕТАЛИЗИРОВАННЫЙ СВЕТЯЩИЙСЯ ЧИП (ЦЕНТР) -->
+            <g transform="translate(400, 400)" opacity="0.16">
+                <!-- 1. Внешнее монтажное кольцо -->
+                <rect x="0" y="0" width="200" height="200" rx="16" fill="none" stroke="#ff007f" stroke-width="2" opacity="0.5"/>
+                <!-- 2. Главная подложка процессора -->
+                <rect x="10" y="10" width="180" height="180" rx="12" fill="#070414" stroke="#ff007f" stroke-width="4" filter="url(#glow-pink)"/>
+                <!-- 3. Золотые ножки контактов (Многослойные) -->
+                <g fill="#00ffcc" opacity="0.8">
+                    <rect x="18" y="35" width="6" height="3"/><rect x="18" y="55" width="6" height="3"/><rect x="18" y="75" width="6" height="3"/><rect x="18" y="95" width="6" height="3"/><rect x="18" y="115" width="6" height="3"/><rect x="18" y="135" width="6" height="3"/><rect x="18" y="155" width="6" height="3"/>
+                    <rect x="176" y="35" width="6" height="3"/><rect x="176" y="55" width="6" height="3"/><rect x="176" y="75" width="6" height="3"/><rect x="176" y="95" width="6" height="3"/><rect x="176" y="115" width="6" height="3"/><rect x="176" y="135" width="6" height="3"/><rect x="176" y="155" width="6" height="3"/>
+                    <rect x="35" y="18" width="3" height="6"/><rect x="55" y="18" width="3" height="6"/><rect x="75" y="18" width="3" height="6"/><rect x="95" y="18" width="3" height="6"/><rect x="115" y="18" width="3" height="6"/><rect x="135" y="18" width="3" height="6"/><rect x="155" y="18" width="3" height="6"/>
+                    <rect x="35" y="176" width="3" height="6"/><rect x="55" y="176" width="3" height="6"/><rect x="75" y="176" width="3" height="6"/><rect x="95" y="176" width="3" height="6"/><rect x="115" y="176" width="3" height="6"/><rect x="135" y="176" width="3" height="6"/><rect x="155" y="176" width="3" height="6"/>
                 </g>
-                <rect x="55" y="55" width="70" height="70" rx="4" fill="#05030a" stroke="#00ffcc" stroke-width="1.5"/>
-                <line x1="65" y1="65" x2="115" y2="65" stroke="#ff007f" stroke-width="2"/><line x1="65" y1="115" x2="115" y2="115" stroke="#ff007f" stroke-width="2"/><circle cx="90" cy="90" r="10" fill="none" stroke="#00ffcc" stroke-width="2" filter="url(#glow-cyan)"/>
+                <!-- 4. Металлическая защитная крышка кристалла -->
+                <rect x="35" y="35" width="130" height="130" rx="8" fill="#0f0b26" stroke="#00ffcc" stroke-width="2" filter="url(#glow-cyan)"/>
+                <!-- Inner Сircuit (Внутренние дорожки кристалла) -->
+                <rect x="55" y="55" width="90" height="90" rx="4" fill="#030208" stroke="#ff007f" stroke-width="1" stroke-dasharray="4,4"/>
+                <!-- 5. Вычислительное Квантовое Ядро -->
+                <rect x="70" y="70" width="60" height="60" rx="2" fill="#010003" stroke="#00ffcc" stroke-width="2"/>
+                <!-- Лазерный прицел внутри ядра -->
+                <line x1="75" y1="100" x2="125" y2="100" stroke="#ff007f" stroke-width="1.5" filter="url(#glow-pink)"/>
+                <line x1="100" y1="75" x2="100" y2="125" stroke="#ff007f" stroke-width="1.5" filter="url(#glow-pink)"/>
+                <circle cx="100" cy="100" r="14" fill="none" stroke="#00ffcc" stroke-width="2" filter="url(#glow-cyan)"/>
+                <circle cx="100" cy="100" r="4" fill="#00ffcc"/>
             </g>
         </svg>
     </div>
 """, unsafe_allow_html=True)
-
 st.markdown("<h1>⚡ Quantum Core Premium AI</h1>", unsafe_allow_html=True)
 st.markdown("<div class='cyber-alert'><span style='color: #ff007f; font-weight: bold;'>🚨 СИСТЕМНЫЙ ПРОТОКОЛ:</span> <span style='color: #ffffff;'>Выдерживайте паузу в <b>5-10 секунд</b> перед отправкой пакетов данных. Для рендеринга графики пишите <b>нарисуй...</b></span></div>", unsafe_allow_html=True)
 st.caption("Quantum Grid Engine v3.5 • Все системы стабильны")
